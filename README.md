@@ -9,4 +9,12 @@ struct MyStruct {
     @CoWBox var myProperty: SomeType
 }
 ```
+## ObservedCoWBox
+```Swift
+@Observable
+final class MyClass {
+    @ObservationIgnored
+    @ObservedCoWBox var myProperty: SomeType
+}
+```
 This endows myProperty with Copy-on-Write semantics.
