@@ -25,7 +25,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/pointfreeco/swift-perception", from: "1.3.4"),
+        .package(url: "https://github.com/pointfreeco/swift-perception", "1.3.4"..<"3.0.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
