@@ -136,15 +136,11 @@
         }
 
         // The box customizes its Mirror (it reflects the wrapped value) and `storage` is private, so reflection
-        // cannot reveal the Storage reference. Instead, snapshot the raw words of the box (no retain, no copy of the
-        // box). Writing the wrapped value in place leaves the wrapper's stored properties, including the Storage
-        // reference, bit-for-bit identical; swapping in a new Storage changes the snapshot.
-        private func storageID<State>(of box: ObservedCoWBox<State>) -> [UInt] {
-            withUnsafeBytes(of: box) { raw in
-                (0..<raw.count / MemoryLayout<UInt>.size).map {
-                    raw.loadUnaligned(fromByteOffset: $0 * MemoryLayout<UInt>.size, as: UInt.self)
-                }
-            }
+        // cannot reveal the Storage reference. Instead, read the raw bits of the box without retaining anything.
+        // Layout assumption: `storage` is the first stored property of the wrapper, so word 0 is the Storage
+        // reference. The remaining words (the registrar) are ignored because they change on every write.
+        private func storageID<State>(of box: ObservedCoWBox<State>) -> UInt {
+            withUnsafeBytes(of: box) { $0.loadUnaligned(fromByteOffset: 0, as: UInt.self) }
         }
     }
 #endif
