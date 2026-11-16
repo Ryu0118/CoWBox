@@ -25,12 +25,15 @@
                 return storage.state
             }
             set {
+                // Check uniqueness before withMutation. withMutation passes self to the registrar,
+                // which retains storage, so a check inside the closure always sees a shared reference.
+                let isUnique = isKnownUniquelyReferenced(&storage)
                 withMutation(keyPath: \.storage) {
-                    if !isKnownUniquelyReferenced(&storage) {
+                    if isUnique {
+                        storage.state = newValue
+                    } else {
                         storage = Storage(state: newValue)
-                        return
                     }
-                    storage.state = newValue
                 }
             }
         }
